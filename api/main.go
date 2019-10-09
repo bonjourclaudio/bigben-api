@@ -1,25 +1,17 @@
-package main
+package api
 
 import (
 	"bytes"
 	"encoding/json"
 	"github.com/claudioontheweb/bigben-api/models"
-	"github.com/gorilla/mux"
 	"github.com/ledongthuc/pdf"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"regexp"
 	"strings"
 	"time"
 )
-
-func main() {
-	r := mux.NewRouter()
-	r.HandleFunc("/", GetMenuHandler)
-	log.Fatal(http.ListenAndServe("localhost:8080", r))
-}
 
 func GetMenuHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
@@ -57,6 +49,10 @@ func downloadFile(url string, w http.ResponseWriter, fn string) (models.Menu, er
 
 	date := strings.Replace(fn, ".", "_", -1)
 	filename := date + ".pdf"
+
+	if _, err := os.Stat("assets"); os.IsNotExist(err) {
+		os.Mkdir("assets", 0777)
+	}
 
 	out, err := os.Create("./assets/" + filename)
 	if err != nil {
@@ -121,10 +117,7 @@ func printFile(filename string) models.Menu {
 
 		menu.BurgerOfTheWeek.Price = string(burgerString[len(burgerString)-5:])
 		menu.BurgerOfTheWeek.Content = strings.Trim(string(burgerString), menu.BurgerOfTheWeek.Price)
-
 	}
 
 	return menu
-
-
 }

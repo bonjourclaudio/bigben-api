@@ -1,0 +1,5 @@
+runtime: go112
+env: standard
+handlers:
+- url: /.*
+  script: auto
